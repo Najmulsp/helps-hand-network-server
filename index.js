@@ -29,6 +29,8 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const volunteerCollection = client.db('Volunteers').collection('needVolunteers');
+    const requestCollection = client.db('Volunteers').collection('requestVolunteers');
+    const addCollection = client.db('Volunteers').collection('addVolunteers');
 
     // get volunteers  for need volunteers post section
   app.get('/volunteers', async(req, res) =>{
@@ -45,7 +47,21 @@ async function run() {
     res.send(result)
   })
 
+     // Be a Volunteer page
+  app.post('/requestVolunteer', async(req, res) =>{
+    const newRequest =req.body;    
+    // send to mongodb
+    const result = await requestCollection.insertOne(newRequest);
+    res.send(result)
+  })
 
+     // add  volunteer post
+  app.post('/addVolunteers', async(req, res) =>{
+    const newAddRequest =req.body;    
+    // send to mongodb
+    const result = await addCollection.insertOne(newAddRequest);
+    res.send(result)
+  })
 
 
 
@@ -70,5 +86,6 @@ app.get('/', (req, res)=>{
 app.listen(port, ()=>{
     console.log(`halps help server is running on port ${port}`)
 })
+
 
 
