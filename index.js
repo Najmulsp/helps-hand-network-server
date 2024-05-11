@@ -63,8 +63,68 @@ async function run() {
     res.send(result)
   })
 
+      //get my posted volunteer post for manage my post
+  
+  app.get('/manageMyPost/:email', async(req, res) =>{
+    const cursor = addCollection.find({email: req.params.organizerEmail});
+    const result = await cursor.toArray();
+    res.send(result)
+  })
 
+      // get specific volunteer post for default value
+  app.get('/singlePost/:id', async(req, res) =>{
+    console.log(req.params.id)
+    const result =await addCollection.findOne({_id: new ObjectId(req.params.id)});
+    ;
+    res.send(result)
+  })
 
+    //  update info of manage my post
+app.put('/updateVolunteerInfo/:id', async(req, res) =>{
+  const id = req.params.id;
+  console.log(id)
+  const query = {_id: new ObjectId(id)};
+  const data ={
+    $set:{    
+        postTitle:req.body.postTitle,
+        description:req.body.description,
+        category:req.body.category,
+        location:req.body.location,
+        quantity:req.body.quantity,
+        deadline:req.body.deadline,
+        organizerName:req.body.organizerName,
+        organizerEmail:req.body.organizerEmail,
+        photo:req.body.photo
+    }
+  }
+  const result = await addCollection.updateOne(query, data)
+  res.send(result)
+})
+  
+    // delete craft from my craft list
+  app.delete('/deleteMyPost/:id', async(req, res) =>{
+    const id = req.params.id;
+    console.log(id)
+    const query ={_id: new ObjectId(id)};
+    const result = await addCollection.deleteOne(query)
+    res.send(result)
+  })
+  
+    // my requested volunteer post cancelling api route
+    app.get('/MyRequestPost/:email', async(req, res) =>{
+      const cursor = requestCollection.find({email: req.params.volunteerEmail});
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
+    // cancell my requested post
+  app.delete('/deleteMyRequestPost/:id', async(req, res) =>{
+    const id = req.params.id;
+    console.log(id)
+    const query ={_id: new ObjectId(id)};
+    const result = await requestCollection.deleteOne(query)
+    res.send(result)
+  })
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
@@ -84,7 +144,7 @@ app.get('/', (req, res)=>{
 })
 
 app.listen(port, ()=>{
-    console.log(`halps help server is running on port ${port}`)
+    console.log(`helps help server is running on port ${port}`)
 })
 
 
