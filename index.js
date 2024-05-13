@@ -79,7 +79,18 @@ async function run() {
 
     // get volunteers  for need volunteers post section
   app.get('/volunteers', async(req, res) =>{
-    const cursor = volunteerCollection.find();
+    const sort = req.query.sort;
+    const search = req.query.search;
+    const filter = req.query.filter
+
+    let query = {
+      postTitle: { $regex: search, $options: 'i' },
+    }
+    if (filter) query.category = filter
+
+    let options = {}
+      if (sort) options = { sort: { deadline: sort === 'asc' ? 1 : -1 } }
+    const cursor = volunteerCollection.find(options, query);
     const result = await cursor.toArray();
     res.send(result)
   })
@@ -174,6 +185,23 @@ app.put('/updateVolunteerInfo/:id', async(req, res) =>{
     const result = await requestCollection.deleteOne(query)
     res.send(result)
   })
+
+
+    // search functionality
+    app.get('/needPosts', async(req, res) =>{      
+      const search = req.query.search;
+      const filter = req.query.filter
+  
+      let query = {
+        postTitle: { $regex: search, $options: 'i' },
+      }
+      if (filter) query.category = filter
+
+      const cursor = volunteerCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
