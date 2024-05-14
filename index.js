@@ -80,17 +80,10 @@ async function run() {
     // get volunteers  for need volunteers post section
   app.get('/volunteers', async(req, res) =>{
     const sort = req.query.sort;
-    const search = req.query.search;
-    const filter = req.query.filter
-
-    let query = {
-      postTitle: { $regex: search, $options: 'i' },
-    }
-    if (filter) query.category = filter
 
     let options = {}
       if (sort) options = { sort: { deadline: sort === 'asc' ? 1 : -1 } }
-    const cursor = volunteerCollection.find(options, query);
+    const cursor = volunteerCollection.find(options);
     const result = await cursor.toArray();
     res.send(result)
   })
@@ -138,6 +131,22 @@ async function run() {
     ;
     res.send(result)
   })
+
+
+    //  update no of quantity
+    app.patch('/updateQuantity/:id', async(req, res) =>{
+      const id = req.params.id;
+      console.log(id)
+      const query = {_id: new ObjectId(id)};
+      const data ={
+        $inc:{    
+          quantity: -1
+        }
+      }
+      const result = await volunteerCollection.updateOne(query, data)
+      res.send(result)
+    })
+
 
     //  update info of manage my post
 app.put('/updateVolunteerInfo/:id', async(req, res) =>{
