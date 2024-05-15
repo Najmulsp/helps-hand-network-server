@@ -88,8 +88,9 @@ async function run() {
     res.send(result)
   })
 
+
       // get volunteer post for post details page
-  app.get('/postDetails/:id', async(req, res) =>{
+  app.get('/postDetails/:id',verifyToken, async(req, res) =>{
     console.log(req.params.id)
     const cursor = volunteerCollection.find({_id: new ObjectId(req.params.id)});
     const result = await cursor.toArray();
@@ -125,7 +126,7 @@ async function run() {
   })
 
       // get specific volunteer post for default value
-  app.get('/singlePost/:id', async(req, res) =>{
+  app.get('/singlePost/:id',verifyToken, async(req, res) =>{
     console.log(req.params.id)
     const result =await addCollection.findOne({_id: new ObjectId(req.params.id)});
     ;
@@ -180,7 +181,7 @@ app.put('/updateVolunteerInfo/:id', async(req, res) =>{
   })
   
     // my requested volunteer post cancelling api route
-    app.get('/MyRequestPost/:email', async(req, res) =>{
+    app.get('/MyRequestPost/:email',verifyToken, async(req, res) =>{
       const cursor = requestCollection.find({email: req.params.volunteerEmail});
       const result = await cursor.toArray();
       res.send(result)
