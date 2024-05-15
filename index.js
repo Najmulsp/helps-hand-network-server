@@ -79,18 +79,37 @@ async function run() {
 
     // get volunteers  for need volunteers post section
   app.get('/volunteers', async(req, res) =>{
-    const sort = req.query.sort;
+     const sort = req.query.sort;
 
-    let options = {}
-      if (sort) options = { sort: { deadline: sort === 'asc' ? 1 : -1 } }
-    const cursor = volunteerCollection.find(options);
-    const result = await cursor.toArray();
-    res.send(result)
+  // Determine the sort order
+  const sortOrder = sort === 'asc' ? 1 : -1;
+
+  // Create the aggregation pipeline
+  const pipeline = [
+    {
+      $addFields: {
+        // Convert the 'deadline' string field to a date field
+        deadlineDate: {
+          $dateFromString: {
+            dateString: '$deadline'
+          }
+        }
+      }
+    },
+    {
+      $sort: {
+        deadlineDate: sortOrder
+      }
+    }
+  ];
+  const cursor = volunteerCollection.aggregate(pipeline);
+  const result = await cursor.toArray();
+  res.send(result);
   })
 
 
       // get volunteer post for post details page
-  app.get('/postDetails/:id',verifyToken, async(req, res) =>{
+  app.get('/postDetails/:id', async(req, res) =>{
     console.log(req.params.id)
     const cursor = volunteerCollection.find({_id: new ObjectId(req.params.id)});
     const result = await cursor.toArray();
@@ -126,7 +145,7 @@ async function run() {
   })
 
       // get specific volunteer post for default value
-  app.get('/singlePost/:id',verifyToken, async(req, res) =>{
+  app.get('/singlePost/:id', async(req, res) =>{
     console.log(req.params.id)
     const result =await addCollection.findOne({_id: new ObjectId(req.params.id)});
     ;
