@@ -203,6 +203,10 @@ app.put('/updateVolunteerInfo/:id', async(req, res) =>{
   
     // my requested volunteer post cancelling api route
     app.get('/MyRequestPost/:email',verifyToken, async(req, res) =>{
+      const tokenEmail = req.user.email;
+    if(tokenEmail !== req.params.email){
+      return res.status(403).send({message: 'forbidden access'})
+    }
       const cursor = requestCollection.find({email: req.params.volunteerEmail});
       const result = await cursor.toArray();
       res.send(result)
