@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors({
-  origin: ['http://localhost:5174',
+  origin: ['http://localhost:5173',
     'helps-hand-network-server.vercel.app',
     'https://helps-hand-network.web.app'],
   credentials: true
@@ -262,7 +262,16 @@ async function run() {
         res.send(result)
       })
 
+        // post blog data
+    app.post('/blogs', async (req, res) => {
+      const newRequest = req.body;
+      // send to mongodb
+      const result = await blogCollection.insertOne(newRequest);
+      res.send(result)
+    })
 
+
+    
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
